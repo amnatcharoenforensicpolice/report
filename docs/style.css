@@ -1,0 +1,32 @@
+body {
+  font-family: sans-serif;
+  margin: 16px;
+  background: #f9f9f9;
+}
+
+.report {
+  background: #fff;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #2b6cb0;
+}
+
+.report div {
+  margin-bottom: 6px;
+}
+
+.report span {
+  font-weight: bold;
+  min-width: 90px;
+  display: inline-block;
+}
+
+.status { font-weight: bold; }
+.รับรายงานแล้ว { color: green; }
+.อยู่ระหว่างดำเนินการ { color: orange; }
+.เสร็จแล้วมารับได้ { color: red; }
+
+@media (min-width: 768px) {
+  body { max-width: 720px; margin: auto; }
+}
