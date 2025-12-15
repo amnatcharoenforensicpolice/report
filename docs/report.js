@@ -26,7 +26,7 @@ if (!st || !SHEETS[st]) {
   throw new Error("Invalid st");
 }
 
-titleEl.innerText = `รายงาน ${st}`;
+titleEl.innerText = `รายงาน สภ. ${st}`;
 
 /*************************************************
  * โหลดข้อมูลจาก Google Sheet
@@ -83,7 +83,7 @@ fetch(SHEET_URL)
   <div><span>สภ.:</span> ${get(r, "สภ.")}</div>
   <div><span>เลขรายงาน:</span> ${get(r, "เลขรายงาน")}</div>
   <div><span>เลขหนังสือนำส่ง:</span> ${get(r, "เลขหนังสือนำส่ง")}</div>
-  <div><span>วันที่รับ:</span> ${get(r, DATE_COL)}</div>
+  <div><span>วันที่รับตรวจ:</span> ${get(r, DATE_COL)}</div>
   <div class="status ${statusClass}">
     <span>สถานะรายงาน:</span> ${statusText}
   </div>
