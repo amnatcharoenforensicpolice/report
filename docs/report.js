@@ -120,7 +120,7 @@ fetch(SHEET_URL)
   <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
   <div><b>วันที่รับ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
 
-  <div class="status ${statusClass}">
+  <div>
   <b>สถานะรายงาน:</b> ${status}
 </div>
 </div>`;
