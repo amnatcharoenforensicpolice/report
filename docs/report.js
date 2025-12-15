@@ -121,7 +121,8 @@ fetch(SHEET_URL)
   <div><b>วันที่รับ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
 
   <div>
-  <b>สถานะรายงาน:</b> ${status}
+  <b>สถานะรายงาน:</b>
+  <span class="status ${statusClass}">${status}</span>
 </div>
 </div>`;
     });
