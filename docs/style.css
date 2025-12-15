@@ -30,3 +30,28 @@ body {
 @media (min-width: 768px) {
   body { max-width: 720px; margin: auto; }
 }
+
+.status {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* เสร็จแล้ว มารับได้ */
+.status.done {
+  background: #1b5e20;   /* เขียวเข้ม */
+  color: #ffffff;
+}
+
+/* รับรายงานแล้ว */
+.status.received {
+  background: #0277bd;   /* ฟ้า */
+  color: #ffffff;
+}
+
+/* อยู่ระหว่างดำเนินการ */
+.status.pending {
+  background: #f9a825;   /* เหลืองเข้ม */
+  color: #000000;
+}
