@@ -45,54 +45,70 @@ fetch(SHEET_URL)
       return;
     }
 
-    // map header
+    /*************************************************
+     * map ชื่อคอลัมน์ → index
+     *************************************************/
     const headerMap = {};
-    table.cols.forEach((c, i) => {
-      if (c.label) headerMap[c.label.trim()] = i;
+    table.cols.forEach((col, i) => {
+      if (col.label) headerMap[col.label.trim()] = i;
     });
 
+    /*************************************************
+     * ฟังก์ชันดึงค่าจากแถว
+     *************************************************/
     const get = (row, name) => {
       const idx = headerMap[name];
-      return idx === undefined
-        ? "-"
-        : row.c[idx]?.f || row.c[idx]?.v || "-";
+      if (idx === undefined) return "-";
+      return row.c[idx]?.f || row.c[idx]?.v || "-";
     };
 
-    const DATE_COL = "วัน เดือน ปี ที่รับหนังสือ";
-
-    const toDate = v => {
-      if (!v || v === "-") return new Date(0);
-      const parts = v.split("/");
-      if (parts.length !== 3) return new Date(0);
-      return new Date(parts[2], parts[1] - 1, parts[0]);
+    /*************************************************
+     * เรียงตามวันที่รับ (ล่าสุดก่อน)
+     *************************************************/
+    const toDate = val => {
+      if (!val) return new Date(0);
+      if (typeof val === "string" && val.includes("/")) {
+        const [d, m, y] = val.split("/");
+        return new Date(y, m - 1, d);
+      }
+      return new Date(val);
     };
 
-    // sort ล่าสุดก่อน
-    table.rows.sort(
-      (a, b) => toDate(get(b, DATE_COL)) - toDate(get(a, DATE_COL))
+    const rows = table.rows.sort(
+      (a, b) =>
+        toDate(get(b, "วัน เดือน ปี ที่รับหนังสือ")) -
+        toDate(get(a, "วัน เดือน ปี ที่รับหนังสือ"))
     );
 
+    /*************************************************
+     * แสดงผล
+     *************************************************/
     let html = "";
 
-    table.rows.forEach(r => {
-      const statusText = get(r, "สถานะรายงาน");
-      const statusClass = statusText.replace(/\s+/g, "-");
+    rows.forEach(r => {
+      const status = get(r, "สถานะรายงาน");
+
+      let statusClass = "";
+      if (status === "เสร็จแล้ว มารับได้") statusClass = "done";
+      else if (status === "รับรายงานแล้ว") statusClass = "received";
+      else if (status === "อยู่ระหว่างดำเนินการ") statusClass = "pending";
 
       html += `
 <div class="report">
-  <div><span>สภ.:</span> ${get(r, "สภ.")}</div>
-  <div><span>เลขรายงาน:</span> ${get(r, "เลขรายงาน")}</div>
-  <div><span>เลขหนังสือนำส่ง:</span> ${get(r, "เลขหนังสือนำส่ง")}</div>
-  <div><span>วันที่รับตรวจ:</span> ${get(r, DATE_COL)}</div>
+  <div><b>สภ.:</b> ${st}</div>
+  <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
+  <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
+  <div><b>วันที่รับ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
+
   <div class="status ${statusClass}">
-    <span>สถานะรายงาน:</span> ${statusText}
+    <b>สถานะรายงาน:</b> ${status}
   </div>
 </div>`;
     });
 
-    reportsEl.innerHTML = html;
+    reportsEl.innerHTML = html || "ไม่พบข้อมูล";
   })
   .catch(err => {
     console.error(err);
-    reportsEl.innerHTML = "❌ โหลดข้อมูลไม่สำเร็จ";
+    reportsEl.innerHTML = "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
   });
