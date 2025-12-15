@@ -11,7 +11,27 @@ const SHEETS = {
   "ปทุมราชวงศา": "1AEhFFptBKZ2DvnX5FC1uODw5UZBZSYlmKW2_1M4V1Hs",
   "ปลาค้าว": "1ikommb_C5ACjHcrv5UK7lwDn7mgRnXo8o7tBAy6Lwyc",
   "น้ำปลีก": "188q-OrPsgQy3DawUpFsgrT5dhqUoQ2Xb6glFiHha35o",
-  "ลืออำนาจ": "1l3mBtDjj3Fj6dv1l-nL-_K8ImzvzEK6bRb1lBnlzZRU"
+  "ลืออำนาจ": "1l3mBtDjj3Fj6dv1l-nL-_K8ImzvzEK6bRb1lBnlzZRU",
+  "เมืองอำนาจเจริญ2": "1b5UwGweBz99ryyfFSQPc7491pWvPInm_Mt_Ytjuk2Hs",
+  "ชานุมาน2": "1pOxI1KVWwT2VpfZqYgzUg9d5h9QG2d1NAwGDny8H8Qo",
+  "พนา2": "16u0J1VIPdZVXzRMVFgVsgykOWBMqYtstk9LsIx-VgFw",
+  "เสนางคนิคม2": "1solNpWHecrb0QGRWipX-bLayapecHi-Uad3oZuGuxOU",
+  "หัวตะพาน2": "1sJHUZ_iD5v3m_JpUngVnF1HgExIUdpT1IG1Nyowu7sQ",
+  "โพนทอง2": "1MT6qu1pfQ-VrBw4_aBCnqVjSMMId-4MVMgyyF2u-RBo",
+  "ปทุมราชวงศา2": "1PcmQUU4QXLgixIYNF1c1xRzl3jvSbTKvupkcMPkTf_k",
+  "ปลาค้าว2": "12r0eMZnCoOZV8v8ivJ5OoCp6oMmGKBQLSHx9KOdhYgg",
+  "น้ำปลีก2": "1Ps4lwj3b6dcPdIGQgzclbh72ilTlR9X03tz2KRJsjvo",
+  "ลืออำนาจ2": "103nCws9f7YEXmFu_L4YB_I0sMCn0Bj4DudjF22rqm2E",
+  "เมืองอำนาจเจริญ3": "1W_Y8wBDpBnAYX_cr8wIEc0enq7A_S5UVlfGN6-xQuoo",
+  "ชานุมาน3": "1FlkyV2UiFawFBWIGZEKiS7XO4AUNP3vccwLojN7Beu0",
+  "พนา3": "1dgG0xAgOexMH2y3zOzOBe6ppQPaMhLrq9H0T-F20GK4",
+  "เสนางคนิคม3": "1UdQdKNys6lw0Vp3T8ZZPoeVDoiJkZq71eLESrG4H8Aw",
+  "หัวตะพาน3": "195ClORmau9_Vm_l_WmcPJStQx7xXPxPxCzVhLUJ3fps",
+  "โพนทอง3": "17kz4jHWEPufMwj7Ry-9RuzvZlyTgN-BVKLX5WcbMD9g",
+  "ปทุมราชวงศา3": "1hq4HnKnEY-MiH-D-loGdFEDUAwMJZYNtXsGhyy-V9fI",
+  "ปลาค้าว3": "1YZ0Ezjgu3SqyWyZ4vI2GK5IEFweZXU7PARWsJ_GpAbU",
+  "น้ำปลีก3": "1huiMUgWuKNhddN5Z7WRkfyI6PMq8mbraTsAJ0u8kRCc",
+  "ลืออำนาจ3": "1swv6b-u9LIxohV7gtM_AyNINDTMpdsZGqlDmK1m_KA0"
 };
 
 /*************************************************
@@ -101,8 +121,8 @@ fetch(SHEET_URL)
   <div><b>วันที่รับ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
 
   <div class="status ${statusClass}">
-    <b>สถานะรายงาน:</b> ${status}
-  </div>
+  <b>สถานะรายงาน:</b> ${status}
+</div>
 </div>`;
     });
 
