@@ -1,61 +1,126 @@
-const SHEET_ID = "1qkgsYnJHQKLAY2Rifyu9LMaWqfxSbmE7Sjh49FFyCwE";
-const SHEET_URL =
- `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+/*************************************************
+ * CONFIG : ใส่ Google Sheet ของแต่ละ สภ. ตรงนี้
+ *************************************************/
+const SHEETS = {
+  "เมืองอำนาจเจริญ": "1PZ-cnf5s6VXF8VhNWbGWKo8EQV01GjM5TjyVFPQYLE4",
+  "ชานุมาน": "1QFVzhYRpsGqEZ4hrOo3gh4-FPQQ1zMCgAxRNhy6PTAk",
+  "พนา": "1TQqCyBrt9eTSNw3AX1I4uGYqgGlApdFqYAFnRQXG70Y",
+  "เสนางคนิคม": "1PwWQF0uTug0Q9tICyHnfOdOOvkSN2uqZH4B2n_UNqNU",
+  "หัวตะพาน": "1qkgsYnJHQKLAY2Rifyu9LMaWqfxSbmE7Sjh49FFyCwE",
+  "โพนทอง": "1hCgFgNhdZmERywlrArIrZBtDPW6jZVix-zZKGWQAwwg",
+  "ปทุมราชวงศา": "1AEhFFptBKZ2DvnX5FC1uODw5UZBZSYlmKW2_1M4V1Hs",
+  "ปลาค้าว": "1ikommb_C5ACjHcrv5UK7lwDn7mgRnXo8o7tBAy6Lwyc",
+  "น้ำปลีก": "188q-OrPsgQy3DawUpFsgrT5dhqUoQ2Xb6glFiHha35o",
+  "ลืออำนาจ": "1l3mBtDjj3Fj6dv1l-nL-_K8ImzvzEK6bRb1lBnlzZRU"
+};
 
-const st = new URLSearchParams(location.search).get("st");
+/*************************************************
+ * อ่านค่า สภ. จาก URL
+ *************************************************/
+const params = new URLSearchParams(window.location.search);
+const st = params.get("st");
 
-if (!st) {
-  document.getElementById("reports").innerHTML =
-    "❗ ลิงก์ไม่ถูกต้อง (ไม่พบชื่อ สภ.)";
-  throw new Error("missing st");
+const reportsEl = document.getElementById("reports");
+const titleEl = document.getElementById("title");
+
+if (!st || !SHEETS[st]) {
+  reportsEl.innerHTML =
+    "❗ ไม่พบข้อมูลของ สภ. นี้<br>กรุณาตรวจสอบลิงก์อีกครั้ง";
+  throw new Error("Invalid st parameter");
 }
 
+titleEl.innerText = `รายงาน ${st}`;
+
+/*************************************************
+ * สร้าง URL สำหรับดึงข้อมูลจาก Google Sheet
+ *************************************************/
+const SHEET_ID = SHEETS[st];
+const SHEET_URL =
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+/*************************************************
+ * โหลดข้อมูล
+ *************************************************/
 fetch(SHEET_URL)
   .then(res => res.text())
   .then(text => {
     const json = JSON.parse(text.substring(47).slice(0, -2));
     const table = json.table;
 
-    // map หัวคอลัมน์
+    if (!table || !table.rows || table.rows.length === 0) {
+      reportsEl.innerHTML = "ไม่พบข้อมูล";
+      return;
+    }
+
+    /*************************************************
+     * map ชื่อหัวคอลัมน์ → index
+     *************************************************/
     const headerMap = {};
-    table.cols.forEach((c,i)=>headerMap[c.label.trim()]=i);
-
-    const get = (row, name) =>
-      row.c[headerMap[name]]?.f ||
-      row.c[headerMap[name]]?.v ||
-      "-";
-
-    const toDate = v => {
-      if (typeof v === "string" && v.includes("/")) {
-        const [d,m,y] = v.split("/");
-        return new Date(y, m-1, d);
+    table.cols.forEach((col, i) => {
+      if (col.label) {
+        headerMap[col.label.trim()] = i;
       }
-      return new Date(v);
+    });
+
+    /*************************************************
+     * ฟังก์ชันดึงค่าจาก row ตามชื่อคอลัมน์
+     *************************************************/
+    const get = (row, name) => {
+      const idx = headerMap[name];
+      if (idx === undefined) return "-";
+      return row.c[idx]?.f || row.c[idx]?.v || "-";
     };
 
-    // กรอง + เรียงวันที่ล่าสุด
-    const rows = table.rows
-      .filter(r => get(r,"สภ.") === st)
-      .sort((a,b)=>toDate(get(b,"วัน เดือน ปี
-ที่รับหนังสือ"))-toDate(get(a,"วัน เดือน ปี
-ที่รับหนังสือ")));
+    /*************************************************
+     * แปลงวันที่ (dd/mm/yyyy)
+     *************************************************/
+    const toDate = (val) => {
+      if (!val) return new Date(0);
 
-    document.getElementById("title").innerText = `รายงาน ${st}`;
+      if (val instanceof Date) return val;
 
+      if (typeof val === "string" && val.includes("/")) {
+        const [d, m, y] = val.split("/");
+        return new Date(y, m - 1, d);
+      }
+
+      return new Date(val);
+    };
+
+    /*************************************************
+     * เรียงตามวันที่รับ (ล่าสุดก่อน)
+     *************************************************/
+    const rows = table.rows.sort(
+      (a, b) =>
+        toDate(get(b, "วัน เดือน ปี
+ที่รับหนังสือ")) -
+        toDate(get(a, "วัน เดือน ปี
+ที่รับหนังสือ"))
+    );
+
+    /*************************************************
+     * แสดงผล
+     *************************************************/
     let html = "";
+
     rows.forEach(r => {
       html += `
       <div class="report">
-        <div><span>เลขรายงาน:</span> ${get(r,"เลขรายงาน")}</div>
-        <div><span>เลขหนังสือนำส่ง:</span> ${get(r,"เลขหนังสือนำส่ง")}</div>
+        <div><span>สภ.:</span> ${st}</div>
+        <div><span>เลขรายงาน:</span> ${get(r, "เลขรายงาน")}</div>
+        <div><span>เลขหนังสือนำส่ง:</span> ${get(r, "เลขหนังสือนำส่ง")}</div>
         <div><span>วัน เดือน ปี
-ที่รับหนังสือ:</span> ${get(r,"วันที่รับงาน")}</div>
-        <div class="status ${get(r,"สถานะรายงาน")}">
-          <span>สถานะรายงาน:</span> ${get(r,"สถานะรายงาน")}
+ที่รับหนังสือ:</span> ${get(r, "วันที่รับงาน")}</div>
+        <div class="status ${get(r, "สถานะ")}">
+          <span>สถานะรายงาน:</span> ${get(r, "สถานะ")}
         </div>
       </div>`;
     });
 
-    document.getElementById("reports").innerHTML =
-      html || "ไม่พบข้อมูลของ สภ. นี้";
+    reportsEl.innerHTML = html || "ไม่พบข้อมูล";
+  })
+  .catch(err => {
+    console.error(err);
+    reportsEl.innerHTML =
+      "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
   });
