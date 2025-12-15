@@ -47,10 +47,11 @@ fetch(SHEET_URL)
       html += `
       <div class="report">
         <div><span>เลขรายงาน:</span> ${get(r,"เลขรายงาน")}</div>
-        <div><span>เลขหนังสือ:</span> ${get(r,"เลขหนังสือ")}</div>
-        <div><span>วันที่รับ:</span> ${get(r,"วันที่รับ")}</div>
-        <div class="status ${get(r,"สถานะ")}">
-          <span>สถานะ:</span> ${get(r,"สถานะ")}
+        <div><span>เลขหนังสือนำส่ง:</span> ${get(r,"เลขหนังสือนำส่ง")}</div>
+        <div><span>วัน เดือน ปี
+ที่รับหนังสือ:</span> ${get(r,"วันที่รับงาน")}</div>
+        <div class="status ${get(r,"สถานะรายงาน")}">
+          <span>สถานะรายงาน:</span> ${get(r,"สถานะรายงาน")}
         </div>
       </div>`;
     });
