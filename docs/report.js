@@ -115,7 +115,7 @@ fetch(SHEET_URL)
 
       html += `
 <div class="report">
-  <div><b>วันที่รับแจ้ง:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
+  <div><b>วันที่รับตรวจ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
   <div><b>สภ.:</b> ${st}</div>
   <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
   <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
@@ -133,6 +133,3 @@ fetch(SHEET_URL)
     console.error(err);
     reportsEl.innerHTML = "❌ เกิดข้อผิดพลาดในการโหลดข้อมูล";
   });
-
-
-
