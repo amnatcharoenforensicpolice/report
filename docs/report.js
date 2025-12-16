@@ -21,17 +21,7 @@ const SHEETS = {
   "ปทุมราชวงศา2": "1PcmQUU4QXLgixIYNF1c1xRzl3jvSbTKvupkcMPkTf_k",
   "ปลาค้าว2": "12r0eMZnCoOZV8v8ivJ5OoCp6oMmGKBQLSHx9KOdhYgg",
   "น้ำปลีก2": "1Ps4lwj3b6dcPdIGQgzclbh72ilTlR9X03tz2KRJsjvo",
-  "ลืออำนาจ2": "103nCws9f7YEXmFu_L4YB_I0sMCn0Bj4DudjF22rqm2E",
-  "เมืองอำนาจเจริญ3": "1W_Y8wBDpBnAYX_cr8wIEc0enq7A_S5UVlfGN6-xQuoo",
-  "ชานุมาน3": "1FlkyV2UiFawFBWIGZEKiS7XO4AUNP3vccwLojN7Beu0",
-  "พนา3": "1dgG0xAgOexMH2y3zOzOBe6ppQPaMhLrq9H0T-F20GK4",
-  "เสนางคนิคม3": "1UdQdKNys6lw0Vp3T8ZZPoeVDoiJkZq71eLESrG4H8Aw",
-  "หัวตะพาน3": "195ClORmau9_Vm_l_WmcPJStQx7xXPxPxCzVhLUJ3fps",
-  "โพนทอง3": "17kz4jHWEPufMwj7Ry-9RuzvZlyTgN-BVKLX5WcbMD9g",
-  "ปทุมราชวงศา3": "1hq4HnKnEY-MiH-D-loGdFEDUAwMJZYNtXsGhyy-V9fI",
-  "ปลาค้าว3": "1YZ0Ezjgu3SqyWyZ4vI2GK5IEFweZXU7PARWsJ_GpAbU",
-  "น้ำปลีก3": "1huiMUgWuKNhddN5Z7WRkfyI6PMq8mbraTsAJ0u8kRCc",
-  "ลืออำนาจ3": "1swv6b-u9LIxohV7gtM_AyNINDTMpdsZGqlDmK1m_KA0"
+  "ลืออำนาจ2": "103nCws9f7YEXmFu_L4YB_I0sMCn0Bj4DudjF22rqm2E"
 };
 
 /*************************************************
@@ -46,7 +36,9 @@ if (!st || !SHEETS[st]) {
   throw new Error("Invalid st");
 }
 
-titleEl.innerText = `รายงาน สภ. ${st}`;
+const displaySt = st.replace(/[0-9]+$/, "");
+titleEl.innerText = `รายงาน สภ. ${displaySt}`;
+
 
 /*************************************************
  * โหลดข้อมูลจาก Google Sheet
@@ -116,7 +108,7 @@ fetch(SHEET_URL)
       html += `
 <div class="report">
   <div><b>วันที่รับตรวจ:</b> ${get(r, "วัน เดือน ปี ที่รับหนังสือ")}</div>
-  <div><b>สภ.:</b> ${st}</div>
+  <div><b>สภ.:</b> ${displaySt}</div>
   <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
   <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
   
