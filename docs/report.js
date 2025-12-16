@@ -77,14 +77,39 @@ fetch(SHEET_URL)
     /*************************************************
      * เรียงตามวันที่รับ (ล่าสุดก่อน)
      *************************************************/
-    const toDate = val => {
-      if (!val) return new Date(0);
-      if (typeof val === "string" && val.includes("/")) {
-        const [d, m, y] = val.split("/");
-        return new Date(y, m - 1, d);
-      }
-      return new Date(val);
-    };
+const toDate = val => {
+  if (!val || typeof val !== "string") return new Date(0);
+
+  const monthMap = {
+    "ม.ค.": 0,
+    "ก.พ.": 1,
+    "มี.ค.": 2,
+    "เม.ย.": 3,
+    "พ.ค.": 4,
+    "มิ.ย.": 5,
+    "ก.ค.": 6,
+    "ส.ค.": 7,
+    "ก.ย.": 8,
+    "ต.ค.": 9,
+    "พ.ย.": 10,
+    "ธ.ค.": 11
+  };
+
+  // ตัวอย่าง "4 ธ.ค. 2025"
+  const parts = val.trim().split(" ");
+  if (parts.length !== 3) return new Date(0);
+
+  const day = parseInt(parts[0], 10);
+  const month = monthMap[parts[1]];
+  const year = parseInt(parts[2], 10);
+
+  if (isNaN(day) || month === undefined || isNaN(year)) {
+    return new Date(0);
+  }
+
+  return new Date(year, month, day);
+};
+
 
     const rows = table.rows.sort(
       (a, b) =>
