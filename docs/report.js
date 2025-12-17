@@ -109,16 +109,32 @@ const toDate = val => {
   const month = monthMap[parts[1]];
   const year = parseInt(parts[2], 10);
 
-  if (isNaN(year)) return val;
+   if (isNaN(day) || month === undefined || isNaN(year)) {
+    return new Date(0);
+  }
 
-  return `${day} ${month} ${year + 543}`;
+  return new Date(year, month, day);
 };
-
     const rows = table.rows.sort(
       (a, b) =>
         toDate(get(a, "วัน เดือน ปี ที่รับตรวจ")) -
         toDate(get(b, "วัน เดือน ปี ที่รับตรวจ"))
     );
+
+const formatThaiBE = val => {
+  if (!val || typeof val !== "string") return val;
+
+  const parts = val.trim().split(" ");
+  if (parts.length !== 3) return val;
+
+  const day = parts[0];
+  const month = parts[1];
+  const year = parseInt(parts[2], 10);
+
+  if (isNaN(year)) return val;
+
+  return `${day} ${month} ${year + 543}`;
+};
 
     /*************************************************
      * แสดงผล
@@ -135,7 +151,7 @@ const toDate = val => {
 
       html += `
 <div class="report">
-  <div><b>วันที่รับตรวจ:</b> ${get(r, "วัน เดือน ปี ที่รับตรวจ")}</div>
+  <div><b>วันที่รับตรวจ:</b> ${formatThaiBE(get(r, "วัน เดือน ปี ที่รับตรวจ"))}</div>
   <div><b>สภ.:</b> ${displaySt}</div>
   <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
   <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
