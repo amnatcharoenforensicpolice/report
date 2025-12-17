@@ -56,3 +56,12 @@ body {
   background: #f9a825;   /* เหลืองเข้ม */
   color: #000000;
 }
+
+/* ===== หัวข้อหน้า ===== */
+#title {
+  font-size: 22px;     
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
