@@ -109,11 +109,9 @@ const toDate = val => {
   const month = monthMap[parts[1]];
   const year = parseInt(parts[2], 10);
 
-  if (isNaN(day) || month === undefined || isNaN(year)) {
-    return new Date(0);
-  }
+  if (isNaN(year)) return val;
 
-  return new Date(year, month, day);
+  return `${day} ${month} ${year + 543}`;
 };
 
     const rows = table.rows.sort(
