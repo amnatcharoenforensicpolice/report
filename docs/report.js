@@ -37,8 +37,14 @@ if (!st || !SHEETS[st]) {
 }
 
 const displaySt = st.replace(/[0-9]+$/, "");
-titleEl.innerText = `รายงาน สภ. ${displaySt}`;
 
+// กำหนดหัวข้อจากเลขท้าย
+let reportTitle = "รายงานยา";
+
+if (st.endsWith("2")) {
+  reportTitle = "รายงานตรวจสถานที่เกิดเหตุ";
+}
+titleEl.innerText = `${reportTitle} สภ.${displaySt}`;
 
 /*************************************************
  * โหลดข้อมูลจาก Google Sheet
