@@ -116,11 +116,10 @@ const toDate = val => {
   return new Date(year, month, day);
 };
 
-
     const rows = table.rows.sort(
       (a, b) =>
         toDate(get(a, "วัน เดือน ปี ที่รับตรวจ")) -
-        toDate(get(b, "วัน เดือน ปี ที่รับจรวจ"))
+        toDate(get(b, "วัน เดือน ปี ที่รับตรวจ"))
     );
 
     /*************************************************
