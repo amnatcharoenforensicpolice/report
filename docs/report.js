@@ -134,8 +134,15 @@ fetch(SHEET_URL)
 
     let html = "";
 
-    rows.forEach(r => {
-      const status = get(r, "สถานะรายงาน");
+rows.forEach(r => {
+  const status = get(r, "สถานะรายงาน");
+  const dateValue = parseThaiDate(get(r, "วันที่รับผล"));
+
+  // ❌ ไม่แสดง "รับรายงานแล้ว" ที่เกิน 10 วัน
+  if (status === "รับรายงานแล้ว" && diffDaysFromToday(dateValue) > 10) {
+    return;
+  }
+
 
       let statusClass = "";
       if (status === "เสร็จแล้ว มารับได้") statusClass = "done";
