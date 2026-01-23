@@ -12,6 +12,7 @@ const SHEETS = {
   "ปลาค้าว": "1ikommb_C5ACjHcrv5UK7lwDn7mgRnXo8o7tBAy6Lwyc",
   "น้ำปลีก": "188q-OrPsgQy3DawUpFsgrT5dhqUoQ2Xb6glFiHha35o",
   "ลืออำนาจ": "1l3mBtDjj3Fj6dv1l-nL-_K8ImzvzEK6bRb1lBnlzZRU",
+
   "เมืองอำนาจเจริญ2": "1b5UwGweBz99ryyfFSQPc7491pWvPInm_Mt_Ytjuk2Hs",
   "ชานุมาน2": "1pOxI1KVWwT2VpfZqYgzUg9d5h9QG2d1NAwGDny8H8Qo",
   "พนา2": "16u0J1VIPdZVXzRMVFgVsgykOWBMqYtstk9LsIx-VgFw",
@@ -36,15 +37,65 @@ if (!st || !SHEETS[st]) {
   throw new Error("Invalid st");
 }
 
+/*************************************************
+ * ชื่อ สภ. (ตัดเลขท้าย)
+ *************************************************/
 const displaySt = st.replace(/[0-9]+$/, "");
 
-// กำหนดหัวข้อจากเลขท้าย
+/*************************************************
+ * ตั้งชื่อหัวข้อ
+ *************************************************/
 let reportTitle = "รายงานยา";
+if (st.endsWith("2")) reportTitle = "รายงานตรวจสถานที่เกิดเหตุ";
 
-if (st.endsWith("2")) {
-  reportTitle = "รายงานตรวจสถานที่เกิดเหตุ";
-}
 titleEl.innerText = `${reportTitle} สภ.${displaySt}`;
+
+/*************************************************
+ * ฟังก์ชันแปลงวันที่ (รองรับ 2 รูปแบบ)
+ *************************************************/
+const parseThaiDate = val => {
+  if (!val || typeof val !== "string") return new Date(0);
+
+  const monthMap = {
+    "ม.ค.": 0, "ก.พ.": 1, "มี.ค.": 2, "เม.ย.": 3,
+    "พ.ค.": 4, "มิ.ย.": 5, "ก.ค.": 6, "ส.ค.": 7,
+    "ก.ย.": 8, "ต.ค.": 9, "พ.ย.": 10, "ธ.ค.": 11
+  };
+
+  // 19/12/2025
+  if (val.includes("/")) {
+    const [d, m, y] = val.split("/").map(n => parseInt(n, 10));
+    if (isNaN(d) || isNaN(m) || isNaN(y)) return new Date(0);
+    return new Date(y, m - 1, d);
+  }
+
+  // 19 ธ.ค. 2025
+  const parts = val.trim().split(" ");
+  if (parts.length === 3 && monthMap[parts[1]] !== undefined) {
+    return new Date(
+      parseInt(parts[2], 10),
+      monthMap[parts[1]],
+      parseInt(parts[0], 10)
+    );
+  }
+
+  return new Date(0);
+};
+
+/*************************************************
+ * แสดงวันที่เป็น พ.ศ.
+ *************************************************/
+const formatThaiDate = val => {
+  const d = parseThaiDate(val);
+  if (isNaN(d)) return val;
+
+  const months = [
+    "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+    "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+  ];
+
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+};
 
 /*************************************************
  * โหลดข้อมูลจาก Google Sheet
@@ -63,82 +114,24 @@ fetch(SHEET_URL)
       return;
     }
 
-    /*************************************************
-     * map ชื่อคอลัมน์ → index
-     *************************************************/
+    // map header
     const headerMap = {};
-    table.cols.forEach((col, i) => {
-      if (col.label) headerMap[col.label.trim()] = i;
+    table.cols.forEach((c, i) => {
+      if (c.label) headerMap[c.label.trim()] = i;
     });
 
-    /*************************************************
-     * ฟังก์ชันดึงค่าจากแถว
-     *************************************************/
     const get = (row, name) => {
       const idx = headerMap[name];
-      if (idx === undefined) return "-";
-      return row.c[idx]?.f || row.c[idx]?.v || "-";
+      return idx === undefined ? "-" : row.c[idx]?.f || row.c[idx]?.v || "-";
     };
 
-    /*************************************************
-     * เรียงตามวันที่รับ (ล่าสุดก่อน)
-     *************************************************/
-const toDate = val => {
-  if (!val || typeof val !== "string") return new Date(0);
-
-  const monthMap = {
-    "ม.ค.": 0,
-    "ก.พ.": 1,
-    "มี.ค.": 2,
-    "เม.ย.": 3,
-    "พ.ค.": 4,
-    "มิ.ย.": 5,
-    "ก.ค.": 6,
-    "ส.ค.": 7,
-    "ก.ย.": 8,
-    "ต.ค.": 9,
-    "พ.ย.": 10,
-    "ธ.ค.": 11
-  };
-
-  // ตัวอย่าง "4 ธ.ค. 2025"
-  const parts = val.trim().split(" ");
-  if (parts.length !== 3) return new Date(0);
-
-  const day = parseInt(parts[0], 10);
-  const month = monthMap[parts[1]];
-  const year = parseInt(parts[2], 10);
-
-   if (isNaN(day) || month === undefined || isNaN(year)) {
-    return new Date(0);
-  }
-
-  return new Date(year, month, day);
-};
+    // เรียงวันที่ล่าสุดก่อน
     const rows = table.rows.sort(
       (a, b) =>
-        toDate(get(a, "วัน เดือน ปี ที่รับตรวจ")) -
-        toDate(get(b, "วัน เดือน ปี ที่รับตรวจ"))
+        parseThaiDate(get(b, "วัน เดือน ปี ที่รับตรวจ")) -
+        parseThaiDate(get(a, "วัน เดือน ปี ที่รับตรวจ"))
     );
 
-const formatThaiBE = val => {
-  if (!val || typeof val !== "string") return val;
-
-  const parts = val.trim().split(" ");
-  if (parts.length !== 3) return val;
-
-  const day = parts[0];
-  const month = parts[1];
-  const year = parseInt(parts[2], 10);
-
-  if (isNaN(year)) return val;
-
-  return `${day} ${month} ${year + 543}`;
-};
-
-    /*************************************************
-     * แสดงผล
-     *************************************************/
     let html = "";
 
     rows.forEach(r => {
@@ -151,15 +144,14 @@ const formatThaiBE = val => {
 
       html += `
 <div class="report">
-  <div><b>วันที่รับตรวจ:</b> ${formatThaiBE(get(r, "วัน เดือน ปี ที่รับตรวจ"))}</div>
+  <div><b>วันที่รับตรวจ:</b> ${formatThaiDate(get(r, "วัน เดือน ปี ที่รับตรวจ"))}</div>
   <div><b>สภ.:</b> ${displaySt}</div>
   <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
   <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
-  
   <div>
-  <b>สถานะรายงาน:</b>
-  <span class="status ${statusClass}">${status}</span>
-</div>
+    <b>สถานะรายงาน:</b>
+    <span class="status ${statusClass}">${status}</span>
+  </div>
 </div>`;
     });
 
