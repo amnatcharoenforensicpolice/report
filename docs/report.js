@@ -98,6 +98,19 @@ const formatThaiDate = val => {
 };
 
 /*************************************************
+ * คำนวณจำนวนวันจากวันนี้
+ *************************************************/
+const diffDaysFromToday = date => {
+  if (!(date instanceof Date) || isNaN(date)) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+
+  return Math.floor((today - date) / (1000 * 60 * 60 * 24));
+};
+
+/*************************************************
  * โหลดข้อมูลจาก Google Sheet
  *************************************************/
 const SHEET_URL =
