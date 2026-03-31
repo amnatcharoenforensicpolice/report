@@ -148,44 +148,48 @@ fetch(SHEET_URL)
     let html = "";
 
 rows.forEach(r => {
+rows.forEach(r => {
   const reportNo = get(r, "เลขรายงาน");
-const bookNo = get(r, "เลขหนังสือนำส่ง");
-const status = get(r, "สถานะรายงาน").trim();
-
-// ❌ ข้ามแถวว่าง
-if (
-  reportNo === "-" &&
-  bookNo === "-" &&
-  status === "-"
-) {
-  return;
-}
-  const status = get(r, "สถานะรายงาน");
+  const bookNo = get(r, "เลขหนังสือนำส่ง");
+  const status = get(r, "สถานะรายงาน").trim();
   const dateValue = parseThaiDate(get(r, "วันที่รับผล"));
 
-  // ❌ ไม่แสดง "รับรายงานแล้ว" ที่เกิน 10 วัน
-  if (status === "รับรายงานแล้ว" && diffDaysFromToday(dateValue) > 10) {
+  // ❌ ข้ามแถวว่าง
+  if (
+    reportNo === "-" &&
+    bookNo === "-" &&
+    status === "-"
+  ) {
     return;
   }
 
+  // ❌ ไม่แสดง "รับรายงานแล้ว" ที่เกิน 10 วัน
+  if (
+    status === "รับรายงานแล้ว" &&
+    dateValue &&
+    !isNaN(dateValue.getTime()) &&
+    diffDaysFromToday(dateValue) > 10
+  ) {
+    return;
+  }
 
-      let statusClass = "";
-      if (status === "เสร็จแล้ว มารับได้") statusClass = "done";
-      else if (status === "รับรายงานแล้ว") statusClass = "received";
-      else if (status === "อยู่ระหว่างดำเนินการ") statusClass = "pending";
+  let statusClass = "";
+  if (status === "เสร็จแล้ว มารับได้") statusClass = "done";
+  else if (status === "รับรายงานแล้ว") statusClass = "received";
+  else if (status === "อยู่ระหว่างดำเนินการ") statusClass = "pending";
 
-      html += `
+  html += `
 <div class="report">
   <div><b>วันที่รับตรวจ:</b> ${formatThaiDate(get(r, "วัน เดือน ปี ที่รับตรวจ"))}</div>
   <div><b>สภ.:</b> ${displaySt}</div>
-  <div><b>เลขหนังสือนำส่ง:</b> ${get(r, "เลขหนังสือนำส่ง")}</div>
-  <div><b>เลขรายงาน:</b> ${get(r, "เลขรายงาน")}</div>
+  <div><b>เลขหนังสือนำส่ง:</b> ${bookNo}</div>
+  <div><b>เลขรายงาน:</b> ${reportNo}</div>
   <div>
     <b>สถานะรายงาน:</b>
     <span class="status ${statusClass}">${status}</span>
   </div>
 </div>`;
-    });
+});
 
     reportsEl.innerHTML = html || "📭 ไม่มีรายการที่แสดง";
   })
