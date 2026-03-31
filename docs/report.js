@@ -175,7 +175,7 @@ rows.forEach(r => {
 </div>`;
     });
 
-    reportsEl.innerHTML = html || "ไม่พบข้อมูล";
+    reportsEl.innerHTML = html || "📭 ไม่มีรายการที่แสดง";
   })
   .catch(err => {
     console.error(err);
