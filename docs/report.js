@@ -79,7 +79,7 @@ const parseThaiDate = val => {
     );
   }
 
-  return new Date(0);
+  return null;
 };
 
 /*************************************************
@@ -87,7 +87,7 @@ const parseThaiDate = val => {
  *************************************************/
 const formatThaiDate = val => {
   const d = parseThaiDate(val);
-  if (isNaN(d)) return val;
+  if (!d || isNaN(d.getTime())) return "-";
 
   const months = [
     "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
@@ -148,6 +148,18 @@ fetch(SHEET_URL)
     let html = "";
 
 rows.forEach(r => {
+  const reportNo = get(r, "เลขรายงาน");
+const bookNo = get(r, "เลขหนังสือนำส่ง");
+const status = get(r, "สถานะรายงาน").trim();
+
+// ❌ ข้ามแถวว่าง
+if (
+  reportNo === "-" &&
+  bookNo === "-" &&
+  status === "-"
+) {
+  return;
+}
   const status = get(r, "สถานะรายงาน");
   const dateValue = parseThaiDate(get(r, "วันที่รับผล"));
 
